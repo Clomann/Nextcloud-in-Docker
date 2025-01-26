@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  nextcloud:
+    build: .
+    container_name: nextcloud_custom
+    restart: always
+    volumes:
+      - nextcloud_data:/var/www/html/nextcloud
+      - php_socket:/run/php
+    networks:
+      - nextcloud_net
+    depends_on:
+      - db
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx_proxy
+    restart: always
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro        # Main NGINX config
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro  # Site config
+      - nextcloud_data:/var/www/html/nextcloud
+      - php_socket:/run/php
+    depends_on:
+      - nextcloud
+    ports:
+      - "8080:80"
+      - "8443:443"
+    networks:
+      - nextcloud_net
+
+  db:
+    image: mariadb:10.11
+    container_name: nextcloud_db
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpassword
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextclouduser
+      - MYSQL_PASSWORD=yourpassword
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - nextcloud_net
+
+volumes:
+  nextcloud_data:
+  db_data:
+  php_socket:
+
+networks:
+  nextcloud_net:
