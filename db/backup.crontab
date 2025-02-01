@@ -1,1 +1,1 @@
-*/2 * * * * /backup.sh >> /backup/backup.log 2>&1
+0 2 * * * /backup.sh >> /backup/backup.log 2>&1
