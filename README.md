@@ -1,5 +1,11 @@
 
 
+## How to use
+
+### MySQL
+Configure root password in:
+- backup.sh
+
 ## Often used commands
 
 docker build -t nextcloud_custom .
