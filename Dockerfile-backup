@@ -1,0 +1,21 @@
+FROM mariadb:10.11
+
+RUN apt-get update
+RUN apt-get upgrade -y
+RUN apt-get install -y cron
+RUN apt-get update && apt-get install -y wget gnupg2 lsb-release cron curl
+RUN wget https://repo.percona.com/apt/percona-release_latest.$(lsb_release -sc)_all.deb \
+    && dpkg -i percona-release_latest.$(lsb_release -sc)_all.deb \
+    && apt-get update \
+    && percona-release setup ps-80 \
+    && apt-get install -y percona-xtrabackup-80
+
+RUN rm -rf /var/lib/apt/lists/*
+
+COPY /db/backup.sh /backup.sh
+COPY /db/backup.crontab /etc/cron.d/backup.crontab
+
+RUN chmod +x /backup.sh
+RUN chmod 0644 /etc/cron.d/backup.crontab && crontab /etc/cron.d/backup.crontab
+
+CMD ["cron", "-f"]

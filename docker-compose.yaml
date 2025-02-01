@@ -1,8 +1,8 @@
-version: '3.8'
-
 services:
   nextcloud:
-    build: .
+    build: 
+      context: .
+      dockerfile: Dockerfile 
     container_name: nextcloud_custom
     restart: always
     volumes:
@@ -19,14 +19,15 @@ services:
     restart: always
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro        # Main NGINX config
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro  # Site config
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf  # Site config
+      - ./nginx/ssl:/etc/ssl:ro  # Mount SSL certificates
       - nextcloud_data:/var/www/html/nextcloud
       - php_socket:/run/php
     depends_on:
       - nextcloud
     ports:
-      - "8080:80"
-      - "8443:443"
+      - "${APP_HTTP_PORT}:80"
+      - "${APP_HTTPS_PORT}:443"
     networks:
       - nextcloud_net
 
@@ -35,12 +36,30 @@ services:
     container_name: nextcloud_db
     restart: always
     environment:
-      - MYSQL_ROOT_PASSWORD=rootpassword
-      - MYSQL_DATABASE=nextcloud
-      - MYSQL_USER=nextclouduser
-      - MYSQL_PASSWORD=yourpassword
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
     volumes:
       - db_data:/var/lib/mysql
+      - mariadb_socket:/var/run/mysqld  # Use the same volume for MariaDB socket
+    networks:
+      - nextcloud_net
+
+  backup:
+    build:
+      context: .
+      dockerfile: Dockerfile-backup
+    container_name: nextcloud_backup
+    restart: always
+    volumes:
+      - db_data:/var/lib/mysql:ro  # Read-only access to DB data
+      - mariadb_socket:/var/run/mysqld  # Use the same volume for MariaDB socket
+      - ./backup:/backup  # Store backups in a persistent directory
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    depends_on:
+      - db
     networks:
       - nextcloud_net
 
@@ -48,6 +67,7 @@ volumes:
   nextcloud_data:
   db_data:
   php_socket:
+  mariadb_socket:  # Docker volume for MariaDB socket
 
 networks:
   nextcloud_net:
