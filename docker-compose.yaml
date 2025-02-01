@@ -53,7 +53,8 @@ services:
     container_name: nextcloud_backup
     restart: always
     volumes:
-      - db_data:/var/lib/mysql:ro  # Read-only access to DB data
+      - nextcloud_data:/var/www/html/nextcloud
+      - db_data:/var/lib/mysql  # Read-only access to DB data
       - mariadb_socket:/var/run/mysqld  # Use the same volume for MariaDB socket
       - ./backup:/backup  # Store backups in a persistent directory
     environment:
