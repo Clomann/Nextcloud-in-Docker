@@ -1,3 +1,6 @@
+#!/bin/bash
+cd "$(dirname "$0")"
+
 export APP_HTTP_PORT=8080
 export APP_HTTPS_PORT=8443
 
