@@ -19,6 +19,11 @@ RUN rm nextcloud.tar.bz2 || :
 RUN curl -o nextcloud.tar.bz2 https://download.nextcloud.com/server/releases/latest.tar.bz2 && \
     tar -xjf nextcloud.tar.bz2  && \ 
     rm nextcloud.tar.bz2
+
+# Create the data directory inside the image
+RUN mkdir -p /var/www/html/nextcloud/data
+
+# Set correct permissions
 RUN chown -R www-data:www-data nextcloud
 RUN chmod -R 755 nextcloud
 

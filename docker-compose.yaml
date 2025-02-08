@@ -6,7 +6,8 @@ services:
     container_name: nextcloud_custom
     restart: always
     volumes:
-      - nextcloud_data:/var/www/html/nextcloud
+      - nextcloud_app:/var/www/html/nextcloud
+      - nextcloud_data:/var/www/html/nextcloud/data
       - php_socket:/run/php
     networks:
       - nextcloud_net
@@ -21,7 +22,8 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro        # Main NGINX config
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf  # Site config
       - ./nginx/ssl:/etc/ssl:ro  # Mount SSL certificates
-      - nextcloud_data:/var/www/html/nextcloud
+      - nextcloud_app:/var/www/html/nextcloud
+      - nextcloud_data:/var/www/html/nextcloud/data
       - php_socket:/run/php
     depends_on:
       - nextcloud
@@ -53,7 +55,8 @@ services:
     container_name: nextcloud_backup
     restart: always
     volumes:
-      - nextcloud_data:/var/www/html/nextcloud
+      - nextcloud_app:/var/www/html/nextcloud
+      - nextcloud_data:/var/www/html/nextcloud/data
       - db_data:/var/lib/mysql  # Read-only access to DB data
       - mariadb_socket:/var/run/mysqld  # Use the same volume for MariaDB socket
       - ./backup:/backup  # Store backups in a persistent directory
@@ -65,6 +68,7 @@ services:
       - nextcloud_net
 
 volumes:
+  nextcloud_app:
   nextcloud_data:
   db_data:
   php_socket:
