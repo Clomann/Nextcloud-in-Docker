@@ -24,6 +24,20 @@ DB_SOCKET="/var/run/mysqld/mysqld.sock"
 DB_USER="root"
 DB_PWD="rootpassword"
 
+### Check If Nextcloud Data Storage (Bind Mount) Is Available ###
+if [ ! -d "$NEXTCLOUD_DATA_SRC" ]; then
+    echo "ERROR: Nextcloud data directory ($NEXTCLOUD_DATA_SRC) not found inside the backup container!"
+    echo "Backup aborted. Ensure the external HDD is mounted and accessible."
+    exit 1
+fi
+
+### Check If MariaDB Is Running (Inside the Backup Container) ###
+if ! mysqladmin ping -h localhost -u$DB_USER -p$DB_PWD --silent; then
+    echo "ERROR: MariaDB is not running or inaccessible from the backup container!"
+    echo "Backup aborted."
+    exit 1
+fi
+
 # Check if a full backup exists
 if [ ! -d "$FULL_BACKUP_DIR/base" ]; then
     echo "Creating first full backup..."
