@@ -15,4 +15,4 @@ set -a  # Automatically export all variables
 source "$ENV_FILE"
 set +a  # Stop automatically exporting
 
-docker-compose -f docker-compose.yaml up -d
+docker compose -f docker-compose.yaml up -d
