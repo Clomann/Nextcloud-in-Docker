@@ -34,6 +34,11 @@ RUN sed -i 's/memory_limit = .*/memory_limit = 512M/' /etc/php/8.2/fpm/php.ini &
     sed -i 's/max_execution_time = .*/max_execution_time = 360/' /etc/php/8.2/fpm/php.ini && \
     sed -i 's|^;listen.mode =.*|listen.mode = 0660|' /etc/php/8.2/fpm/pool.d/www.conf
 
+# Stop and disable Apache2 if it exists
+RUN systemctl stop apache2 || true && systemctl disable apache2 || true
+
+# Ensure Apache is not running on ports 80/443
+RUN lsof -i :80 -i :443 || true
 
 # Expose PHP-FPM port (NGINX will connect to it)
 EXPOSE 9000
