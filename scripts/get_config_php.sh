@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TARGET_DIR=./nextcloud/config
+TARGET_DIR=./../nextcloud/config
 
 mkdir -p $TARGET_DIR
 

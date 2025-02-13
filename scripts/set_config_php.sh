@@ -1,4 +1,4 @@
-SOURCE_DIR=./nextcloud/config
+SOURCE_DIR=./../nextcloud/config
 CONTAINER=nextcloud_custom
 
 mkdir -p $SOURCE_DIR
