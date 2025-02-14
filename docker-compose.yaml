@@ -21,7 +21,7 @@ services:
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro        # Main NGINX config
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf  # Site config
-      - ./nginx/ssl:/etc/ssl:ro  # Mount SSL certificates
+      - ./etc/letsencrypt/live/:/etc/ssl:ro  # Mount SSL certificates
       - nextcloud_app:/var/www/html/nextcloud
       - nextcloud_data:/var/www/html/nextcloud/data
       - php_socket:/run/php
