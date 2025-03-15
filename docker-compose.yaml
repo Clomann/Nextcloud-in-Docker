@@ -59,7 +59,7 @@ services:
       - nextcloud_data:/var/www/html/nextcloud/data
       - db_data:/var/lib/mysql  # Read-only access to DB data
       - mariadb_socket:/var/run/mysqld  # Use the same volume for MariaDB socket
-      - ./backup:/backup  # Store backups in a persistent directory
+      - ${NC_BACKUP_MOUNT_POINT}:/backup  # Store backups in a persistent directory
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
     depends_on:
@@ -70,6 +70,11 @@ services:
 volumes:
   nextcloud_app:
   nextcloud_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${NC_DATA_VOLUME_DIR}
   db_data:
   php_socket:
   mariadb_socket:  # Docker volume for MariaDB socket
